@@ -55,6 +55,11 @@ public class Student {
     @Column(length = 20)
     private String level;
 
+    @Override
+    public String toString() {
+        return name + " (" + major + ")";
+    }
+
     // 注意：enrolledCourses (List) 不需要在这里定义
     // 它通过Enrollment表查询获得
 }

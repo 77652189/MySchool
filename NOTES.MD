@@ -40,5 +40,4 @@ day3
 如果需要验证用户输入的合法性，可以在Service类中添加验证逻辑，也可以在GUI类中添加输入验证格式
 
 day4
-学习了ON DELETE CASCADE的作用和 JOIN的使用
-在实体类中添加了级联删除的注解，当删除一个用户时，自动删除与之关联的学生或教师信息
+学习了ON DELETE CASCADE的作用和 JOIN的使用,在Cource CourseSection Student Instructor实体类中添加了级联删除的注解

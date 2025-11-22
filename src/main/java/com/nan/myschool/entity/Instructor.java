@@ -42,6 +42,12 @@ public class Instructor {
     @Column(nullable = false, length = 100)
     private String department;
 
+    @Override
+    public String toString() {
+        return name + " - " + department;
+    }
+
+
     // 注意：assignedSections (List) 不需要在这里定义
     // 它通过CourseSection.instructorId查询获得
 }

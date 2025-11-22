@@ -45,4 +45,10 @@ public class Course {
      */
     @Column(nullable = false, length = 100)
     private String department;
+
+    @Override
+    public String toString() {
+        return title + " (" + credits + "学分)";
+    }
+
 }

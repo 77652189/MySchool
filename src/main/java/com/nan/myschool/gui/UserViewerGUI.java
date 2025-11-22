@@ -33,7 +33,8 @@ public class UserViewerGUI extends JFrame {
 
     private void initializeGUI() {
         setTitle("用户信息管理系统");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        // 修改：关闭窗口时隐藏而不是退出程序
+        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         setSize(400, 300);
         setLayout(new BorderLayout(10, 10));
 
@@ -106,6 +107,9 @@ public class UserViewerGUI extends JFrame {
         JDialog dialog = new JDialog(this, "添加新用户", true);
         dialog.setLayout(new GridLayout(4, 2, 5, 5));
 
+        // 修改：给 contentPane 设置 border
+        ((JPanel)dialog.getContentPane()).setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
         JTextField usernameField = new JTextField();
         JTextField passwordField = new JTextField();
         JTextField roleField = new JTextField();
@@ -145,6 +149,12 @@ public class UserViewerGUI extends JFrame {
             if (option == JOptionPane.YES_OPTION) {
                 userService.deleteUser(currentUser.getId());
                 loadUsers();
+                if (currentIndex >= users.size() && currentIndex > 0) {
+                    currentIndex--;
+                }
+                if (!users.isEmpty()) {
+                    displayCurrentUser();
+                }
             }
         }
     }
@@ -155,6 +165,9 @@ public class UserViewerGUI extends JFrame {
         User currentUser = users.get(currentIndex);
         JDialog dialog = new JDialog(this, "修改用户信息", true);
         dialog.setLayout(new GridLayout(4, 2, 5, 5));
+
+        // 修改：给 contentPane 设置 border
+        ((JPanel)dialog.getContentPane()).setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         JTextField usernameField = new JTextField(currentUser.getUsername());
         JTextField passwordField = new JTextField(currentUser.getPassword());

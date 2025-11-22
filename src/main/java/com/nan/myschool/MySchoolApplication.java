@@ -1,6 +1,6 @@
 package com.nan.myschool;
 
-import com.nan.myschool.gui.UserViewerGUI;
+import com.nan.myschool.gui.MainMenuGUI;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -20,9 +20,11 @@ public class MySchoolApplication {
         if (!GraphicsEnvironment.isHeadless()) {
             SwingUtilities.invokeLater(() -> {
                 try {
-                    UserViewerGUI gui = context.getBean(UserViewerGUI.class);
-                    gui.setVisible(true);
-                    System.out.println("GUI启动成功！");
+                    // 启动主菜单
+                    MainMenuGUI mainMenu = context.getBean(MainMenuGUI.class);
+                    mainMenu.setVisible(true);
+                    System.out.println("主菜单启动成功！");
+
                 } catch (Exception e) {
                     System.err.println("GUI启动失败：" + e.getMessage());
                     e.printStackTrace();
