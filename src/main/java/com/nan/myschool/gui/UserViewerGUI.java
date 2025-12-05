@@ -50,6 +50,14 @@ public class UserViewerGUI extends JFrame {
         navPanel.add(prevButton);
         navPanel.add(nextButton);
 
+        // 添加刷新按钮
+        JButton refreshBtn = new JButton("刷新");
+        refreshBtn.addActionListener(e -> {
+            loadUsers();
+            JOptionPane.showMessageDialog(this, "数据已刷新！", "提示", JOptionPane.INFORMATION_MESSAGE);
+        });
+        navPanel.add(refreshBtn);
+
         // 操作按钮面板
         JPanel actionPanel = new JPanel(new FlowLayout());
         actionPanel.add(addButton);
@@ -74,8 +82,14 @@ public class UserViewerGUI extends JFrame {
 
     private void loadUsers() {
         users = userService.getAllUsers();
+        currentIndex = 0;  // 重置索引
         if (!users.isEmpty()) {
             displayCurrentUser();
+        } else {
+            // 如果没有数据，显示提示
+            idLabel.setText("用户ID: 暂无数据");
+            usernameLabel.setText("用户名: 请先添加用户");
+            roleLabel.setText("角色: -");
         }
     }
 

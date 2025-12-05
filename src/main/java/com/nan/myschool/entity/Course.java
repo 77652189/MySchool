@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 /**
- * Course实体类 - 课程信息
+ * Course实体类 - 训练课程
  */
 @Entity
 @Table(name = "course")
@@ -15,9 +15,6 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class Course {
 
-    /**
-     * 课程ID - 主键，自动生成
-     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer courseId;
@@ -35,20 +32,25 @@ public class Course {
     private String description;
 
     /**
-     * 学分
+     * 课时数
      */
     @Column(nullable = false)
-    private Integer credits;
+    private Integer sessionCount;
 
     /**
-     * 开课院系
+     * 训练类型（基础服从/敏捷训练/行为矫正/社交训练）
      */
     @Column(nullable = false, length = 100)
-    private String department;
+    private String trainingType;
+
+    /**
+     * 适合的宠物类型
+     */
+    @Column(length = 100)
+    private String suitableFor;
 
     @Override
     public String toString() {
-        return title + " (" + credits + "学分)";
+        return title + " (" + sessionCount + "课时)";
     }
-
 }

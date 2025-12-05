@@ -1,43 +1,43 @@
--- 插入测试用户数据
-INSERT IGNORE INTO user (id, username, password, role) VALUES
-(1, 'admin', 'admin123', 'Admin'),
-(2, 'john_teacher', 'pass123', 'Instructor'),
-(3, 'mary_teacher', 'pass123', 'Instructor'),
-(4, 'alice_student', 'pass123', 'Student'),
-(5, 'bob_student', 'pass123', 'Student'),
-(6, 'charlie_student', 'pass123', 'Student');
+-- 插入用户数据
+INSERT INTO user (username, password, role) VALUES
+                                                ('admin', 'admin123', 'Admin'),
+                                                ('trainer_john', 'pass123', 'Trainer'),
+                                                ('trainer_mary', 'pass123', 'Trainer'),
+                                                ('owner_alice', 'pass123', 'PetOwner'),
+                                                ('owner_bob', 'pass123', 'PetOwner'),
+                                                ('owner_charlie', 'pass123', 'PetOwner');
 
--- 插入教师数据
-INSERT IGNORE INTO instructor (instructor_id, name, department) VALUES
-(2, '张教授', '计算机科学系'),
-(3, '李老师', '数学系');
+-- 插入训练师数据
+INSERT INTO trainer (trainer_id, name, specialization, certification_level) VALUES
+                                                                                (2, '约翰·史密斯', '服从训练', '高级认证训练师'),
+                                                                                (3, '玛丽·琼斯', '敏捷训练', '专业认证训练师');
 
--- 插入学生数据
-INSERT IGNORE INTO student (student_id, name, email, major, level) VALUES
-(4, '王小明', 'alice@school.edu', '计算机科学', 'Junior'),
-(5, '李华', 'bob@school.edu', '软件工程', 'Sophomore'),
-(6, '陈思', 'charlie@school.edu', '信息系统', 'Freshman');
+-- 插入宠物数据
+INSERT INTO pet (pet_id, name, breed, species, age_in_months, temperament, owner_name, owner_contact) VALUES
+                                                                                                          (4, '皮皮', '金毛寻回犬', '狗', 18, '活泼友好，精力充沛', '李小明', '138-1234-5678'),
+                                                                                                          (5, '豆豆', '边境牧羊犬', '狗', 24, '聪明好动，服从性强', '王丽华', '139-8765-4321'),
+                                                                                                          (6, '咪咪', '英国短毛猫', '猫', 12, '温顺安静，偶尔调皮', '张伟', '136-5555-6666');
 
--- 插入课程数据
-INSERT IGNORE INTO course (course_id, title, description, credits, department) VALUES
-(1, '数据结构与算法', '学习基本数据结构和算法设计', 4, '计算机科学系'),
-(2, '数据库系统', '关系数据库理论与实践', 3, '计算机科学系'),
-(3, '高等数学', '微积分和线性代数', 4, '数学系'),
-(4, '操作系统', '操作系统原理与实现', 3, '计算机科学系');
+-- 插入训练课程
+INSERT INTO course (title, description, session_count, training_type, suitable_for) VALUES
+                                                                                        ('基础服从训练', '教授宠物基本指令：坐、卧、等待、召回等', 12, '基础服从', '所有犬类'),
+                                                                                        ('敏捷障碍训练', '通过障碍物训练提升宠物的协调性和服从性', 16, '敏捷训练', '中型及大型犬'),
+                                                                                        ('社交礼仪课程', '帮助宠物学习与人和其他动物友好相处', 8, '社交训练', '所有宠物'),
+                                                                                        ('行为矫正课程', '纠正不良行为如吠叫、撕咬、分离焦虑等', 10, '行为矫正', '所有犬类');
 
--- 插入课程章节数据
-INSERT IGNORE INTO course_section (section_id, course_id, instructor_id, room, schedule, capacity) VALUES
-(1, 1, 2, 'A101', 'Mon & Wed 9:00-10:30 AM', 30),
-(2, 1, 2, 'A102', 'Tue & Thu 2:00-3:30 PM', 25),
-(3, 2, 2, 'B201', 'Mon & Wed 2:00-3:30 PM', 35),
-(4, 3, 3, 'C301', 'Tue & Thu 10:00-11:30 AM', 40),
-(5, 4, 2, 'A103', 'Wed & Fri 3:00-4:30 PM', 28);
+-- 插入训练班级
+INSERT INTO course_section (course_id, trainer_id, training_ground, schedule, capacity) VALUES
+                                                                                            (1, 2, 'A区训练场', '周一/周三 9:00-10:30', 8),
+                                                                                            (1, 2, 'A区训练场', '周二/周四 14:00-15:30', 8),
+                                                                                            (2, 3, 'B区敏捷场', '周一/周三 14:00-16:00', 6),
+                                                                                            (3, 2, 'C区社交区', '周六 10:00-12:00', 10),
+                                                                                            (4, 3, 'A区训练场', '周三/周五 15:00-16:30', 6);
 
--- 插入选课记录
-INSERT IGNORE INTO enrollment (enrollment_id, student_id, course_section_id, grade) VALUES
-(1, 4, 1, 'A'),
-(2, 4, 3, 'B+'),
-(3, 5, 1, 'B'),
-(4, 5, 2, 'A-'),
-(5, 6, 1, NULL),
-(6, 6, 4, 'C+');
+-- 插入报名记录
+INSERT INTO enrollment (pet_id, course_section_id, rating, progress_notes, status) VALUES
+                                                                                       (4, 1, 'Good', '皮皮学习"坐"和"卧"指令进展顺利，召回能力需加强', 'InProgress'),
+                                                                                       (4, 3, 'Excellent', '社交能力优秀，与其他狗狗相处融洽', 'Completed'),
+                                                                                       (5, 1, 'Excellent', '边牧豆豆学习能力超强，已掌握所有基础指令', 'Completed'),
+                                                                                       (5, 2, 'Good', '敏捷训练中表现出色，跳跃和穿越技巧娴熟', 'InProgress'),
+                                                                                       (6, 3, NULL, '咪咪刚开始社交训练，需要逐步适应环境', 'InProgress'),
+                                                                                       (6, 4, 'Fair', '在纠正抓沙发行为，有一定进展', 'InProgress');
