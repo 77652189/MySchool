@@ -1,1 +1,1 @@
-This project is a school management system.
+This project is a pet school management system.
