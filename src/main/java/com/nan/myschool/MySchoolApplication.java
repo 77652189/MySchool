@@ -1,7 +1,7 @@
 package com.nan.myschool;
 
 import com.formdev.flatlaf.FlatDarkLaf;
-import com.nan.myschool.gui.MainMenuGUI;
+import com.nan.myschool.gui.SimpleLoginGUI;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -25,9 +25,10 @@ public class MySchoolApplication {
         if (!GraphicsEnvironment.isHeadless()) {
             SwingUtilities.invokeLater(() -> {
                 try {
-                    MainMenuGUI mainMenu = context.getBean(MainMenuGUI.class);
-                    mainMenu.setVisible(true);
-                    System.out.println("🐾 宠物训练学校管理系统启动成功！");
+                    // 启动登录界面
+                    SimpleLoginGUI loginGUI = context.getBean(SimpleLoginGUI.class);
+                    loginGUI.setVisible(true);
+                    System.out.println("登录界面启动成功！");
 
                 } catch (Exception e) {
                     System.err.println("GUI启动失败：" + e.getMessage());

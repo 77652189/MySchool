@@ -1,5 +1,6 @@
 package com.nan.myschool.gui;
 
+import com.nan.myschool.config.SessionManager;
 import com.nan.myschool.config.ThemeManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,8 +16,13 @@ public class MainMenuGUI extends JFrame {
     private final EnrollmentManagementGUI enrollmentManagementGUI;
     private final ThemeSettingsDialog themeSettingsDialog;
     private final ThemeManager themeManager;
-    private final PetProfileGUI petProfileGUI;  // 新增
-    private final AchievementWallGUI achievementWallGUI;  // 新增
+    private final PetProfileGUI petProfileGUI;
+    private final AchievementWallGUI achievementWallGUI;
+    private final SessionManager sessionManager;
+    private SimpleLoginGUI loginGUI;  // 新增：保存登录界面引用
+
+    private JPanel menuPanel;
+    private JLabel userInfoLabel;
 
     @Autowired
     public MainMenuGUI(UserViewerGUI userViewerGUI,
@@ -24,30 +30,37 @@ public class MainMenuGUI extends JFrame {
                        EnrollmentManagementGUI enrollmentManagementGUI,
                        ThemeSettingsDialog themeSettingsDialog,
                        ThemeManager themeManager,
-                       PetProfileGUI petProfileGUI,  // 新增
-                       AchievementWallGUI achievementWallGUI) {  // 新增
+                       PetProfileGUI petProfileGUI,
+                       AchievementWallGUI achievementWallGUI,
+                       SessionManager sessionManager) {
         this.userViewerGUI = userViewerGUI;
         this.sectionMasterDetailGUI = sectionMasterDetailGUI;
         this.enrollmentManagementGUI = enrollmentManagementGUI;
         this.themeSettingsDialog = themeSettingsDialog;
         this.themeManager = themeManager;
-        this.petProfileGUI = petProfileGUI;  // 新增
-        this.achievementWallGUI = achievementWallGUI;  // 新增
+        this.petProfileGUI = petProfileGUI;
+        this.achievementWallGUI = achievementWallGUI;
+        this.sessionManager = sessionManager;
         initializeGUI();
     }
 
+    // 新增：设置登录界面引用
+    public void setLoginGUI(SimpleLoginGUI loginGUI) {
+        this.loginGUI = loginGUI;
+    }
+
     private void initializeGUI() {
-        setTitle("🐾 宠物训练学校管理系统");
+        setTitle("宠物训练学校管理系统");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(650, 620);
+        setSize(650, 720);
         setLayout(new BorderLayout(0, 0));
 
         JPanel headerPanel = createHeaderPanel();
-        JPanel centerPanel = createCenterPanel();
+        menuPanel = createCenterPanel();
         JPanel footerPanel = createFooterPanel();
 
         add(headerPanel, BorderLayout.NORTH);
-        add(centerPanel, BorderLayout.CENTER);
+        add(menuPanel, BorderLayout.CENTER);
         add(footerPanel, BorderLayout.SOUTH);
 
         setLocationRelativeTo(null);
@@ -97,16 +110,42 @@ public class MainMenuGUI extends JFrame {
         title2.setForeground(Color.WHITE);
         title2.setAlignmentX(java.awt.Component.CENTER_ALIGNMENT);
 
-        centerArea.add(Box.createVerticalStrut(25));
+        userInfoLabel = new JLabel(getUserInfoText());
+        userInfoLabel.setFont(new Font("微软雅黑", Font.PLAIN, 13));
+        userInfoLabel.setForeground(new Color(236, 240, 241));
+        userInfoLabel.setAlignmentX(java.awt.Component.CENTER_ALIGNMENT);
+
+        centerArea.add(Box.createVerticalStrut(20));
         centerArea.add(title1);
         centerArea.add(Box.createVerticalStrut(10));
         centerArea.add(title2);
-        centerArea.add(Box.createVerticalStrut(25));
+        centerArea.add(Box.createVerticalStrut(8));
+        centerArea.add(userInfoLabel);
+        centerArea.add(Box.createVerticalStrut(20));
 
         container.add(topBar, BorderLayout.NORTH);
         container.add(centerArea, BorderLayout.CENTER);
 
         return container;
+    }
+
+    private String getUserInfoText() {
+        if (!sessionManager.isLoggedIn()) {
+            return "未登录 - 请登录以访问完整功能";
+        }
+
+        String username = sessionManager.getCurrentUser().getUsername();
+        String role = getRoleDisplayName(sessionManager.getCurrentRole());
+        return "当前用户: " + username + " (" + role + ")";
+    }
+
+    private String getRoleDisplayName(String role) {
+        return switch (role) {
+            case "Admin" -> "管理员";
+            case "Trainer" -> "训练师";
+            case "PetOwner" -> "宠物主人";
+            default -> "未知";
+        };
     }
 
     private JPanel createCenterPanel() {
@@ -119,36 +158,85 @@ public class MainMenuGUI extends JFrame {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(8, 0, 8, 0);
 
-        // 创建菜单按钮
-        JButton petProfileButton = createStyledButton("宠物档案", new Color(52, 152, 219), "PETS");  // 新增
-        JButton trainingButton = createStyledButton("训练课程管理", new Color(46, 204, 113), "TRAINING");
-        JButton enrollmentButton = createStyledButton("报名管理", new Color(155, 89, 182), "ENROLL");
-        JButton achievementButton = createStyledButton("成就墙", new Color(241, 196, 15), "AWARDS");  // 新增
-        JButton userButton = createStyledButton("用户管理", new Color(149, 165, 166), "USERS");
+        int rowIndex = 0;
+        String role = sessionManager.getCurrentRole();
+
+        // 如果未登录，只显示登录按钮
+        if (!sessionManager.isLoggedIn()) {
+            JButton loginButton = createStyledButton("点击登录", new Color(46, 204, 113), "LOGIN");
+            loginButton.addActionListener(e -> returnToLogin());
+            gbc.gridy = rowIndex++;
+            centerPanel.add(loginButton, gbc);
+
+            JButton exitButton = createStyledButton("退出系统", new Color(231, 76, 60), "EXIT");
+            exitButton.addActionListener(e -> exitApplication());
+            gbc.gridy = rowIndex++;
+            gbc.insets = new Insets(15, 0, 0, 0);
+            centerPanel.add(exitButton, gbc);
+
+            return centerPanel;
+        }
+
+        // 已登录：根据角色显示功能
+
+        // 宠物档案 - PetOwner, Admin
+        if ("PetOwner".equals(role) || "Admin".equals(role)) {
+            JButton petProfileButton = createStyledButton("宠物档案", new Color(52, 152, 219), "PETS");
+            petProfileButton.addActionListener(e -> petProfileGUI.setVisible(true));
+            gbc.gridy = rowIndex++;
+            centerPanel.add(petProfileButton, gbc);
+        }
+
+        // 训练课程管理 - Trainer, Admin
+        if ("Trainer".equals(role) || "Admin".equals(role)) {
+            JButton trainingButton = createStyledButton("训练课程管理", new Color(46, 204, 113), "TRAINING");
+            trainingButton.addActionListener(e -> openTrainingManagement());
+            gbc.gridy = rowIndex++;
+            centerPanel.add(trainingButton, gbc);
+        }
+
+        // 报名管理 - PetOwner, Admin
+        if ("PetOwner".equals(role) || "Admin".equals(role)) {
+            JButton enrollmentButton = createStyledButton("报名管理", new Color(155, 89, 182), "ENROLL");
+            enrollmentButton.addActionListener(e -> openEnrollmentManagement());
+            gbc.gridy = rowIndex++;
+            centerPanel.add(enrollmentButton, gbc);
+        }
+
+        // 成就墙 - Trainer, Admin
+        if ("Trainer".equals(role) || "Admin".equals(role)) {
+            JButton achievementButton = createStyledButton("成就墙", new Color(241, 196, 15), "AWARDS");
+            achievementButton.addActionListener(e -> achievementWallGUI.setVisible(true));
+            gbc.gridy = rowIndex++;
+            centerPanel.add(achievementButton, gbc);
+        }
+
+        // 用户管理 - 仅 Admin
+        if ("Admin".equals(role)) {
+            JButton userButton = createStyledButton("用户管理", new Color(149, 165, 166), "USERS");
+            userButton.addActionListener(e -> openUserManagement());
+            gbc.gridy = rowIndex++;
+            centerPanel.add(userButton, gbc);
+        }
+
+        // 主题设置 - 所有人
         JButton themeSettingsButton = createStyledButton("主题设置", new Color(243, 156, 18), "THEME");
-        JButton aboutButton = createStyledButton("关于系统", new Color(52, 73, 94), "ABOUT");
-        JButton exitButton = createStyledButton("退出系统", new Color(231, 76, 60), "EXIT");
-
-        // 添加按钮事件
-        petProfileButton.addActionListener(e -> petProfileGUI.setVisible(true));  // 新增
-        trainingButton.addActionListener(e -> openTrainingManagement());
-        enrollmentButton.addActionListener(e -> openEnrollmentManagement());
-        achievementButton.addActionListener(e -> achievementWallGUI.setVisible(true));  // 新增
-        userButton.addActionListener(e -> openUserManagement());
         themeSettingsButton.addActionListener(e -> openThemeSettings());
-        aboutButton.addActionListener(e -> showAbout());
-        exitButton.addActionListener(e -> exitApplication());
+        gbc.gridy = rowIndex++;
+        centerPanel.add(themeSettingsButton, gbc);
 
-        // 添加按钮到面板
-        gbc.gridy = 0; centerPanel.add(petProfileButton, gbc);  // 新增
-        gbc.gridy = 1; centerPanel.add(trainingButton, gbc);
-        gbc.gridy = 2; centerPanel.add(enrollmentButton, gbc);
-        gbc.gridy = 3; centerPanel.add(achievementButton, gbc);  // 新增
-        gbc.gridy = 4; centerPanel.add(userButton, gbc);
-        gbc.gridy = 5; centerPanel.add(themeSettingsButton, gbc);
-        gbc.gridy = 6; centerPanel.add(aboutButton, gbc);
-        gbc.gridy = 7; gbc.insets = new Insets(15, 0, 0, 0);
-        centerPanel.add(exitButton, gbc);
+        // 关于系统 - 所有人
+        JButton aboutButton = createStyledButton("关于系统", new Color(52, 73, 94), "ABOUT");
+        aboutButton.addActionListener(e -> showAbout());
+        gbc.gridy = rowIndex++;
+        centerPanel.add(aboutButton, gbc);
+
+        // 登出按钮
+        JButton logoutButton = createStyledButton("登出", new Color(230, 126, 34), "LOGOUT");
+        logoutButton.addActionListener(e -> logout());
+        gbc.gridy = rowIndex++;
+        gbc.insets = new Insets(15, 0, 0, 0);
+        centerPanel.add(logoutButton, gbc);
 
         return centerPanel;
     }
@@ -201,21 +289,72 @@ public class MainMenuGUI extends JFrame {
         return button;
     }
 
-    private void openTrainingManagement() { sectionMasterDetailGUI.setVisible(true); }
-    private void openEnrollmentManagement() { enrollmentManagementGUI.setVisible(true); }
-    private void openUserManagement() { userViewerGUI.setVisible(true); }
-    private void openThemeSettings() { themeSettingsDialog.showDialog(); }
+    public void refreshMenu() {
+        if (userInfoLabel != null) {
+            userInfoLabel.setText(getUserInfoText());
+        }
+
+        remove(menuPanel);
+        menuPanel = createCenterPanel();
+        add(menuPanel, BorderLayout.CENTER);
+
+        revalidate();
+        repaint();
+    }
+
+    private void logout() {
+        int option = JOptionPane.showConfirmDialog(this,
+                "确定要登出吗？",
+                "登出确认",
+                JOptionPane.YES_NO_OPTION);
+
+        if (option == JOptionPane.YES_OPTION) {
+            sessionManager.logout();
+
+            // 关闭主菜单，返回登录界面
+            this.setVisible(false);
+
+            if (loginGUI != null) {
+                loginGUI.clearForm();  // 清空登录表单
+                loginGUI.setVisible(true);
+            }
+        }
+    }
+
+    private void returnToLogin() {
+        this.setVisible(false);
+        if (loginGUI != null) {
+            loginGUI.setVisible(true);
+        }
+    }
+
+    private void openTrainingManagement() {
+        sectionMasterDetailGUI.setVisible(true);
+    }
+
+    private void openEnrollmentManagement() {
+        enrollmentManagementGUI.setVisible(true);
+    }
+
+    private void openUserManagement() {
+        userViewerGUI.setVisible(true);
+    }
+
+    private void openThemeSettings() {
+        themeSettingsDialog.showDialog();
+    }
 
     private void showAbout() {
-        String message = "🐾 宠物训练学校管理系统 v1.0\n\n" +
+        String message = "宠物训练学校管理系统 v1.0\n\n" +
                 "专业的宠物训练与管理平台\n\n" +
                 "功能模块:\n" +
-                "• 🐾 宠物档案管理\n" +
-                "• 📚 训练课程管理\n" +
-                "• ✏️ 报名管理\n" +
-                "• 🏆 成就墙展示\n" +
-                "• 👥 用户管理\n" +
-                "• 🎨 主题切换\n\n" +
+                "• 宠物档案管理\n" +
+                "• 训练课程管理\n" +
+                "• 报名管理\n" +
+                "• 成就墙展示\n" +
+                "• 用户管理\n" +
+                "• 主题切换\n" +
+                "• 角色权限控制\n\n" +
                 "我们的使命:\n" +
                 "帮助每一只宠物成为最好的自己！\n\n" +
                 "开发者: Nan\n" +
