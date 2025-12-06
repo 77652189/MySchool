@@ -96,6 +96,7 @@ L等。
 （Spring Boot，MySQL，JPA，Lombok，FlatLaf等）
 （mvc模式，实体类，仓库类，服务类，GUI类等）
 （mysql,CRUD操作，依赖注入，级联删除等）
+最好画一个图，展示架构设计
 
 
 
