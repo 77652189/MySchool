@@ -28,9 +28,9 @@ public class EnrollmentManagementGUI extends JFrame {
     private JTable enrolledSectionsTable;
     private DefaultTableModel enrolledSectionsModel;
 
-    private JButton enrollButton = new JButton("报名 →");
-    private JButton dropButton = new JButton("← 退训");
-    private JButton refreshButton = new JButton("刷新");
+    private JButton enrollButton = new JButton("Enroll →");
+    private JButton dropButton = new JButton("← Drop");
+    private JButton refreshButton = new JButton("Refresh");
 
     @Autowired
     public EnrollmentManagementGUI(PetService petService,
@@ -40,11 +40,11 @@ public class EnrollmentManagementGUI extends JFrame {
         this.sectionService = sectionService;
         this.enrollmentsService = enrollmentsService;
         initializeGUI();
-        loadData();  // 自动加载数据
+        loadData();
     }
 
     private void initializeGUI() {
-        setTitle("报名管理系统");
+        setTitle("Enrollment Management System");
         setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         setSize(1200, 600);
         setLayout(new BorderLayout(10, 10));
@@ -52,7 +52,7 @@ public class EnrollmentManagementGUI extends JFrame {
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 5, 10));
 
-        topPanel.add(new JLabel("选择宠物："));
+        topPanel.add(new JLabel("Select Pet:"));
         petComboBox = new JComboBox<>();
         petComboBox.setPreferredSize(new Dimension(250, 25));
         petComboBox.addActionListener(e -> loadPetEnrollments());
@@ -62,11 +62,11 @@ public class EnrollmentManagementGUI extends JFrame {
         topPanel.add(refreshButton);
         refreshButton.addActionListener(e -> loadData());
 
-        // 左侧：可选课程
+        // Left panel: Available courses
         JPanel leftPanel = new JPanel(new BorderLayout());
-        leftPanel.setBorder(BorderFactory.createTitledBorder("可选训练课程"));
+        leftPanel.setBorder(BorderFactory.createTitledBorder("Available Training Courses"));
 
-        String[] availableColumns = {"班级ID", "课程名称", "训练师", "场地", "时间", "容量", "已报名/总数"};
+        String[] availableColumns = {"Section ID", "Course Name", "Trainer", "Venue", "Schedule", "Capacity", "Enrolled/Total"};
         availableSectionsModel = new DefaultTableModel(availableColumns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -76,16 +76,16 @@ public class EnrollmentManagementGUI extends JFrame {
         availableSectionsTable = new JTable(availableSectionsModel);
         availableSectionsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         availableSectionsTable.setRowHeight(28);
-        availableSectionsTable.setFont(new Font("微软雅黑", Font.PLAIN, 13));
+        availableSectionsTable.setFont(new Font("Dialog", Font.PLAIN, 13));
 
         JScrollPane leftScrollPane = new JScrollPane(availableSectionsTable);
         leftPanel.add(leftScrollPane, BorderLayout.CENTER);
 
-        // 右侧：已报名课程
+        // Right panel: Enrolled courses
         JPanel rightPanel = new JPanel(new BorderLayout());
-        rightPanel.setBorder(BorderFactory.createTitledBorder("已报名课程"));
+        rightPanel.setBorder(BorderFactory.createTitledBorder("Enrolled Courses"));
 
-        String[] enrolledColumns = {"报名ID", "班级ID", "课程名称", "训练师", "场地", "时间", "评级"};
+        String[] enrolledColumns = {"Enrollment ID", "Section ID", "Course Name", "Trainer", "Venue", "Schedule", "Rating"};
         enrolledSectionsModel = new DefaultTableModel(enrolledColumns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -95,12 +95,12 @@ public class EnrollmentManagementGUI extends JFrame {
         enrolledSectionsTable = new JTable(enrolledSectionsModel);
         enrolledSectionsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         enrolledSectionsTable.setRowHeight(28);
-        enrolledSectionsTable.setFont(new Font("微软雅黑", Font.PLAIN, 13));
+        enrolledSectionsTable.setFont(new Font("Dialog", Font.PLAIN, 13));
 
         JScrollPane rightScrollPane = new JScrollPane(enrolledSectionsTable);
         rightPanel.add(rightScrollPane, BorderLayout.CENTER);
 
-        // 中间按钮面板
+        // Middle buttons panel
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(200, 10, 10, 10));
@@ -197,13 +197,13 @@ public class EnrollmentManagementGUI extends JFrame {
     private void enrollInSection() {
         Pet selectedPet = (Pet) petComboBox.getSelectedItem();
         if (selectedPet == null) {
-            JOptionPane.showMessageDialog(this, "请先选择宠物！", "提示", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please select a pet first!", "Notice", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         int selectedRow = availableSectionsTable.getSelectedRow();
         if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "请先选择要报名的课程！", "提示", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please select a course to enroll!", "Notice", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -211,13 +211,13 @@ public class EnrollmentManagementGUI extends JFrame {
         CourseSection section = sectionService.getSectionById(sectionId);
 
         if (enrollmentsService.isPetEnrolled(selectedPet, section)) {
-            JOptionPane.showMessageDialog(this, "该宠物已报名这个训练班！", "提示", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "This pet is already enrolled in this course!", "Notice", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         long enrolledCount = enrollmentsService.getEnrollmentCount(section);
         if (enrolledCount >= section.getCapacity()) {
-            JOptionPane.showMessageDialog(this, "该训练班已满，无法报名！", "提示", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "This course is full and cannot accept more enrollments!", "Notice", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -226,11 +226,11 @@ public class EnrollmentManagementGUI extends JFrame {
         newEnrollment.setCourseSection(section);
         newEnrollment.setRating(null);
         newEnrollment.setStatus("InProgress");
-        newEnrollment.setProgressNotes("刚开始训练");
+        newEnrollment.setProgressNotes("Just started training");
 
         enrollmentsService.saveEnrollment(newEnrollment);
 
-        JOptionPane.showMessageDialog(this, "报名成功！", "成功", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, "Enrollment successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
 
         loadAvailableSections();
         loadPetEnrollments();
@@ -239,7 +239,7 @@ public class EnrollmentManagementGUI extends JFrame {
     private void dropSection() {
         int selectedRow = enrolledSectionsTable.getSelectedRow();
         if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "请先选择要退训的课程！", "提示", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please select a course to drop!", "Notice", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -247,32 +247,33 @@ public class EnrollmentManagementGUI extends JFrame {
         String courseName = (String) enrolledSectionsModel.getValueAt(selectedRow, 2);
 
         int option = JOptionPane.showConfirmDialog(this,
-                "确定要退训 " + courseName + " 吗？",
-                "确认退训",
+                "Are you sure you want to drop " + courseName + "?",
+                "Confirm Drop",
                 JOptionPane.YES_NO_OPTION);
 
         if (option == JOptionPane.YES_OPTION) {
             enrollmentsService.deleteEnrollment(enrollmentId);
-            JOptionPane.showMessageDialog(this, "退训成功！", "成功", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Course dropped successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
 
             loadAvailableSections();
             loadPetEnrollments();
         }
     }
 
-    // 辅助方法
+    // Helper methods
     private String getTrainingTypeTag(String trainingType) {
+        // Support both Chinese and English training types for backward compatibility
         return switch (trainingType) {
-            case "基础服从" -> "基础";
-            case "敏捷训练" -> "敏捷";
-            case "社交训练" -> "社交";
-            case "行为矫正" -> "矫正";
-            default -> "其他";
+            case "Basic Obedience", "基础服从" -> "Basic";
+            case "Agility Training", "敏捷训练" -> "Agility";
+            case "Social Training", "社交训练" -> "Social";
+            case "Behavior Correction", "行为矫正" -> "Correction";
+            default -> "Other";
         };
     }
 
     private String getRatingText(String rating) {
-        if (rating == null) return "[ ] 未评级";
+        if (rating == null) return "[ ] Not Rated";
         return switch (rating) {
             case "Excellent" -> "[★★★] " + rating;
             case "Good" -> "[★★] " + rating;

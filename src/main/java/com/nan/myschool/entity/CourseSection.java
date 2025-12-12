@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 /**
- * CourseSection实体类 - 训练班级
+ * CourseSection Entity - Training Class Section
  */
 @Entity
 @Table(name = "course_section")
@@ -28,25 +28,25 @@ public class CourseSection {
     private Trainer trainer;
 
     /**
-     * 训练场地
+     * Training ground
      */
     @Column(length = 50)
     private String trainingGround;
 
     /**
-     * 训练时间
+     * Training schedule
      */
     @Column(length = 100)
     private String schedule;
 
     /**
-     * 最大容量
+     * Maximum capacity
      */
     @Column(nullable = false)
     private Integer capacity;
 
     @Override
     public String toString() {
-        return "第" + sectionId + "班 (场地:" + trainingGround + ")";
+        return "Section " + sectionId + " (Ground: " + trainingGround + ")";
     }
 }

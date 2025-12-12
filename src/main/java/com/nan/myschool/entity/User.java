@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 /**
- * User实体类 - 系统用户
+ * User Entity - System User
  */
 @Entity
 @Table(name = "user")
@@ -26,7 +26,7 @@ public class User {
     private String password;
 
     /**
-     * 角色 - Admin（管理员）, Trainer（训练师）, PetOwner（宠物主人）
+     * Role - Admin, Trainer, PetOwner
      */
     @Column(nullable = false, length = 20)
     private String role;

@@ -19,7 +19,7 @@ public class MainMenuGUI extends JFrame {
     private final PetProfileGUI petProfileGUI;
     private final AchievementWallGUI achievementWallGUI;
     private final SessionManager sessionManager;
-    private SimpleLoginGUI loginGUI;  // 新增：保存登录界面引用
+    private SimpleLoginGUI loginGUI;
 
     private JPanel menuPanel;
     private JLabel userInfoLabel;
@@ -44,13 +44,12 @@ public class MainMenuGUI extends JFrame {
         initializeGUI();
     }
 
-    // 新增：设置登录界面引用
     public void setLoginGUI(SimpleLoginGUI loginGUI) {
         this.loginGUI = loginGUI;
     }
 
     private void initializeGUI() {
-        setTitle("宠物训练学校管理系统");
+        setTitle("Pet Training School Management System");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(650, 720);
         setLayout(new BorderLayout(0, 0));
@@ -75,9 +74,9 @@ public class MainMenuGUI extends JFrame {
         JPanel topBar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 12));
         topBar.setOpaque(false);
 
-        JButton themeBtn = new JButton("切换主题");
-        themeBtn.setFont(new Font("微软雅黑", Font.PLAIN, 12));
-        themeBtn.setPreferredSize(new Dimension(90, 32));
+        JButton themeBtn = new JButton("Toggle Theme");
+        themeBtn.setFont(new Font("Dialog", Font.PLAIN, 12));
+        themeBtn.setPreferredSize(new Dimension(110, 32));
         themeBtn.setBackground(new Color(255, 255, 255, 40));
         themeBtn.setForeground(Color.WHITE);
         themeBtn.setBorder(BorderFactory.createLineBorder(Color.WHITE, 1));
@@ -101,17 +100,17 @@ public class MainMenuGUI extends JFrame {
         centerArea.setLayout(new BoxLayout(centerArea, BoxLayout.Y_AXIS));
 
         JLabel title1 = new JLabel("Pet Training School");
-        title1.setFont(new Font("微软雅黑", Font.BOLD, 38));
+        title1.setFont(new Font("Dialog", Font.BOLD, 38));
         title1.setForeground(Color.WHITE);
         title1.setAlignmentX(java.awt.Component.CENTER_ALIGNMENT);
 
-        JLabel title2 = new JLabel("宠物训练学校管理系统");
-        title2.setFont(new Font("微软雅黑", Font.PLAIN, 18));
+        JLabel title2 = new JLabel("Management System");
+        title2.setFont(new Font("Dialog", Font.PLAIN, 18));
         title2.setForeground(Color.WHITE);
         title2.setAlignmentX(java.awt.Component.CENTER_ALIGNMENT);
 
         userInfoLabel = new JLabel(getUserInfoText());
-        userInfoLabel.setFont(new Font("微软雅黑", Font.PLAIN, 13));
+        userInfoLabel.setFont(new Font("Dialog", Font.PLAIN, 13));
         userInfoLabel.setForeground(new Color(236, 240, 241));
         userInfoLabel.setAlignmentX(java.awt.Component.CENTER_ALIGNMENT);
 
@@ -131,20 +130,20 @@ public class MainMenuGUI extends JFrame {
 
     private String getUserInfoText() {
         if (!sessionManager.isLoggedIn()) {
-            return "未登录 - 请登录以访问完整功能";
+            return "Not logged in - Please login to access full features";
         }
 
         String username = sessionManager.getCurrentUser().getUsername();
         String role = getRoleDisplayName(sessionManager.getCurrentRole());
-        return "当前用户: " + username + " (" + role + ")";
+        return "Current User: " + username + " (" + role + ")";
     }
 
     private String getRoleDisplayName(String role) {
         return switch (role) {
-            case "Admin" -> "管理员";
-            case "Trainer" -> "训练师";
-            case "PetOwner" -> "宠物主人";
-            default -> "未知";
+            case "Admin" -> "Administrator";
+            case "Trainer" -> "Trainer";
+            case "PetOwner" -> "Pet Owner";
+            default -> "Unknown";
         };
     }
 
@@ -161,14 +160,14 @@ public class MainMenuGUI extends JFrame {
         int rowIndex = 0;
         String role = sessionManager.getCurrentRole();
 
-        // 如果未登录，只显示登录按钮
+        // If not logged in, only show login button
         if (!sessionManager.isLoggedIn()) {
-            JButton loginButton = createStyledButton("点击登录", new Color(46, 204, 113), "LOGIN");
+            JButton loginButton = createStyledButton("Click to Login", new Color(46, 204, 113), "LOGIN");
             loginButton.addActionListener(e -> returnToLogin());
             gbc.gridy = rowIndex++;
             centerPanel.add(loginButton, gbc);
 
-            JButton exitButton = createStyledButton("退出系统", new Color(231, 76, 60), "EXIT");
+            JButton exitButton = createStyledButton("Exit System", new Color(231, 76, 60), "EXIT");
             exitButton.addActionListener(e -> exitApplication());
             gbc.gridy = rowIndex++;
             gbc.insets = new Insets(15, 0, 0, 0);
@@ -177,62 +176,62 @@ public class MainMenuGUI extends JFrame {
             return centerPanel;
         }
 
-        // 已登录：根据角色显示功能
+        // Logged in: Show features based on role
 
-        // 宠物档案 - PetOwner, Admin
+        // Pet Profile - PetOwner, Admin
         if ("PetOwner".equals(role) || "Admin".equals(role)) {
-            JButton petProfileButton = createStyledButton("宠物档案", new Color(52, 152, 219), "PETS");
+            JButton petProfileButton = createStyledButton("Pet Profiles", new Color(52, 152, 219), "PETS");
             petProfileButton.addActionListener(e -> petProfileGUI.setVisible(true));
             gbc.gridy = rowIndex++;
             centerPanel.add(petProfileButton, gbc);
         }
 
-        // 训练课程管理 - Trainer, Admin
+        // Training Course Management - Trainer, Admin
         if ("Trainer".equals(role) || "Admin".equals(role)) {
-            JButton trainingButton = createStyledButton("训练课程管理", new Color(46, 204, 113), "TRAINING");
+            JButton trainingButton = createStyledButton("Training Course Management", new Color(46, 204, 113), "TRAINING");
             trainingButton.addActionListener(e -> openTrainingManagement());
             gbc.gridy = rowIndex++;
             centerPanel.add(trainingButton, gbc);
         }
 
-        // 报名管理 - PetOwner, Admin
+        // Enrollment Management - PetOwner, Admin
         if ("PetOwner".equals(role) || "Admin".equals(role)) {
-            JButton enrollmentButton = createStyledButton("报名管理", new Color(155, 89, 182), "ENROLL");
+            JButton enrollmentButton = createStyledButton("Enrollment Management", new Color(155, 89, 182), "ENROLL");
             enrollmentButton.addActionListener(e -> openEnrollmentManagement());
             gbc.gridy = rowIndex++;
             centerPanel.add(enrollmentButton, gbc);
         }
 
-        // 成就墙 - Trainer, Admin
+        // Achievement Wall - Trainer, Admin
         if ("Trainer".equals(role) || "Admin".equals(role)) {
-            JButton achievementButton = createStyledButton("成就墙", new Color(241, 196, 15), "AWARDS");
+            JButton achievementButton = createStyledButton("Achievement Wall", new Color(241, 196, 15), "AWARDS");
             achievementButton.addActionListener(e -> achievementWallGUI.setVisible(true));
             gbc.gridy = rowIndex++;
             centerPanel.add(achievementButton, gbc);
         }
 
-        // 用户管理 - 仅 Admin
+        // User Management - Admin only
         if ("Admin".equals(role)) {
-            JButton userButton = createStyledButton("用户管理", new Color(149, 165, 166), "USERS");
+            JButton userButton = createStyledButton("User Management", new Color(149, 165, 166), "USERS");
             userButton.addActionListener(e -> openUserManagement());
             gbc.gridy = rowIndex++;
             centerPanel.add(userButton, gbc);
         }
 
-        // 主题设置 - 所有人
-        JButton themeSettingsButton = createStyledButton("主题设置", new Color(243, 156, 18), "THEME");
+        // Theme Settings - Everyone
+        JButton themeSettingsButton = createStyledButton("Theme Settings", new Color(243, 156, 18), "THEME");
         themeSettingsButton.addActionListener(e -> openThemeSettings());
         gbc.gridy = rowIndex++;
         centerPanel.add(themeSettingsButton, gbc);
 
-        // 关于系统 - 所有人
-        JButton aboutButton = createStyledButton("关于系统", new Color(52, 73, 94), "ABOUT");
+        // About System - Everyone
+        JButton aboutButton = createStyledButton("About System", new Color(52, 73, 94), "ABOUT");
         aboutButton.addActionListener(e -> showAbout());
         gbc.gridy = rowIndex++;
         centerPanel.add(aboutButton, gbc);
 
-        // 登出按钮
-        JButton logoutButton = createStyledButton("登出", new Color(230, 126, 34), "LOGOUT");
+        // Logout button
+        JButton logoutButton = createStyledButton("Logout", new Color(230, 126, 34), "LOGOUT");
         logoutButton.addActionListener(e -> logout());
         gbc.gridy = rowIndex++;
         gbc.insets = new Insets(15, 0, 0, 0);
@@ -246,7 +245,7 @@ public class MainMenuGUI extends JFrame {
         footerPanel.setBorder(new EmptyBorder(12, 0, 12, 0));
 
         JLabel footerLabel = new JLabel("© 2025 Pet Training School System | Developed by Nan");
-        footerLabel.setFont(new Font("微软雅黑", Font.PLAIN, 11));
+        footerLabel.setFont(new Font("Dialog", Font.PLAIN, 11));
         footerLabel.setForeground(Color.GRAY);
         footerLabel.setHorizontalAlignment(SwingConstants.CENTER);
         footerPanel.add(footerLabel, BorderLayout.CENTER);
@@ -269,7 +268,7 @@ public class MainMenuGUI extends JFrame {
         tagLabel.setBorder(new EmptyBorder(0, 20, 0, 0));
 
         JLabel textLabel = new JLabel(text);
-        textLabel.setFont(new Font("微软雅黑", Font.PLAIN, 17));
+        textLabel.setFont(new Font("Dialog", Font.PLAIN, 17));
         textLabel.setForeground(Color.WHITE);
         textLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
@@ -304,18 +303,18 @@ public class MainMenuGUI extends JFrame {
 
     private void logout() {
         int option = JOptionPane.showConfirmDialog(this,
-                "确定要登出吗？",
-                "登出确认",
+                "Are you sure you want to logout?",
+                "Logout Confirmation",
                 JOptionPane.YES_NO_OPTION);
 
         if (option == JOptionPane.YES_OPTION) {
             sessionManager.logout();
 
-            // 关闭主菜单，返回登录界面
+            // Close main menu and return to login screen
             this.setVisible(false);
 
             if (loginGUI != null) {
-                loginGUI.clearForm();  // 清空登录表单
+                loginGUI.clearForm();
                 loginGUI.setVisible(true);
             }
         }
@@ -345,27 +344,30 @@ public class MainMenuGUI extends JFrame {
     }
 
     private void showAbout() {
-        String message = "宠物训练学校管理系统 v1.0\n\n" +
-                "专业的宠物训练与管理平台\n\n" +
-                "功能模块:\n" +
-                "• 宠物档案管理\n" +
-                "• 训练课程管理\n" +
-                "• 报名管理\n" +
-                "• 成就墙展示\n" +
-                "• 用户管理\n" +
-                "• 主题切换\n" +
-                "• 角色权限控制\n\n" +
-                "我们的使命:\n" +
-                "帮助每一只宠物成为最好的自己！\n\n" +
-                "开发者: Nan\n" +
-                "学校: Northeastern University\n" +
-                "版本日期: 2025";
-        JOptionPane.showMessageDialog(this, message, "关于系统", JOptionPane.INFORMATION_MESSAGE);
+        String message = "Pet Training School Management System v1.0\n\n" +
+                "Professional Pet Training & Management Platform\n\n" +
+                "Features:\n" +
+                "• Pet Profile Management\n" +
+                "• Training Course Management\n" +
+                "• Enrollment Management\n" +
+                "• Achievement Wall Display\n" +
+                "• User Management\n" +
+                "• Theme Switching\n" +
+                "• Role-Based Access Control\n\n" +
+                "Our Mission:\n" +
+                "Help every pet become the best version of themselves!\n\n" +
+                "Developer: Nan\n" +
+                "School: Northeastern University\n" +
+                "Version Date: 2025";
+        JOptionPane.showMessageDialog(this, message, "About System", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void exitApplication() {
-        int option = JOptionPane.showConfirmDialog(this, "确定要退出系统吗？", "退出确认",
-                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        int option = JOptionPane.showConfirmDialog(this,
+                "Are you sure you want to exit the system?",
+                "Exit Confirmation",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE);
         if (option == JOptionPane.YES_OPTION) {
             System.exit(0);
         }

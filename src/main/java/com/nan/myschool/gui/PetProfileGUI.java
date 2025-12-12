@@ -7,10 +7,13 @@ import com.nan.myschool.service.PetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.InputStream;
 import java.util.List;
 
 @Component
@@ -38,11 +41,11 @@ public class PetProfileGUI extends JFrame {
         this.petService = petService;
         this.enrollmentsService = enrollmentsService;
         initializeGUI();
-        loadPets();  // 自动加载
+        loadPets();
     }
 
     private void initializeGUI() {
-        setTitle("宠物档案查看器");
+        setTitle("Pet Profile Viewer");
         setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         setSize(950, 650);
         setLayout(new BorderLayout(15, 15));
@@ -67,18 +70,17 @@ public class PetProfileGUI extends JFrame {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));
         panel.setBackground(new Color(52, 73, 94));
 
-        JLabel selectLabel = new JLabel("选择宠物：");
-        selectLabel.setFont(new Font("微软雅黑", Font.BOLD, 15));
+        JLabel selectLabel = new JLabel("Select Pet:");
+        selectLabel.setFont(new Font("Dialog", Font.BOLD, 15));
         selectLabel.setForeground(Color.WHITE);
 
         petSelector = new JComboBox<>();
         petSelector.setPreferredSize(new Dimension(250, 32));
-        petSelector.setFont(new Font("微软雅黑", Font.PLAIN, 14));
+        petSelector.setFont(new Font("Dialog", Font.PLAIN, 14));
         petSelector.addActionListener(e -> displayPetProfile());
 
-        // 添加刷新按钮
-        refreshButton = new JButton("刷新");
-        refreshButton.setFont(new Font("微软雅黑", Font.PLAIN, 13));
+        refreshButton = new JButton("Refresh");
+        refreshButton.setFont(new Font("Dialog", Font.PLAIN, 13));
         refreshButton.setPreferredSize(new Dimension(80, 32));
         refreshButton.setBackground(new Color(46, 204, 113));
         refreshButton.setForeground(Color.WHITE);
@@ -98,28 +100,28 @@ public class PetProfileGUI extends JFrame {
         JPanel card = new JPanel(new BorderLayout(10, 10));
         card.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(new Color(52, 152, 219), 2),
-                "宠物信息",
+                "Pet Information",
                 0, 0,
-                new Font("微软雅黑", Font.BOLD, 14),
+                new Font("Dialog", Font.BOLD, 14),
                 new Color(52, 152, 219)
         ));
 
-        // 照片区域
+        // Photo area
         photoPanel = new JPanel();
         photoPanel.setPreferredSize(new Dimension(200, 200));
         photoPanel.setBackground(Color.WHITE);
 
-        // 信息面板
+        // Information panel
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
         infoPanel.setBorder(new EmptyBorder(10, 15, 10, 15));
 
-        nameLabel = createInfoLabel("", new Font("微软雅黑", Font.BOLD, 20));
-        breedLabel = createInfoLabel("", new Font("微软雅黑", Font.PLAIN, 14));
-        ageLabel = createInfoLabel("", new Font("微软雅黑", Font.PLAIN, 14));
-        temperamentLabel = createInfoLabel("", new Font("微软雅黑", Font.PLAIN, 14));
-        ownerLabel = createInfoLabel("", new Font("微软雅黑", Font.PLAIN, 14));
-        contactLabel = createInfoLabel("", new Font("微软雅黑", Font.PLAIN, 14));
+        nameLabel = createInfoLabel("", new Font("Dialog", Font.BOLD, 20));
+        breedLabel = createInfoLabel("", new Font("Dialog", Font.PLAIN, 14));
+        ageLabel = createInfoLabel("", new Font("Dialog", Font.PLAIN, 14));
+        temperamentLabel = createInfoLabel("", new Font("Dialog", Font.PLAIN, 14));
+        ownerLabel = createInfoLabel("", new Font("Dialog", Font.PLAIN, 14));
+        contactLabel = createInfoLabel("", new Font("Dialog", Font.PLAIN, 14));
 
         infoPanel.add(nameLabel);
         infoPanel.add(Box.createVerticalStrut(15));
@@ -135,18 +137,18 @@ public class PetProfileGUI extends JFrame {
         infoPanel.add(Box.createVerticalStrut(8));
         infoPanel.add(contactLabel);
 
-        // 训练进度条
+        // Training progress bar
         JPanel progressPanel = new JPanel(new BorderLayout(5, 5));
-        progressPanel.setBorder(BorderFactory.createTitledBorder("总体训练进度"));
+        progressPanel.setBorder(BorderFactory.createTitledBorder("Overall Training Progress"));
 
         progressBar = new JProgressBar(0, 100);
         progressBar.setStringPainted(true);
         progressBar.setPreferredSize(new Dimension(180, 28));
         progressBar.setForeground(new Color(46, 204, 113));
-        progressBar.setFont(new Font("微软雅黑", Font.BOLD, 13));
+        progressBar.setFont(new Font("Dialog", Font.BOLD, 13));
 
-        statsLabel = new JLabel("完成 0/0 门课程");
-        statsLabel.setFont(new Font("微软雅黑", Font.PLAIN, 13));
+        statsLabel = new JLabel("Completed 0/0 courses");
+        statsLabel.setFont(new Font("Dialog", Font.PLAIN, 13));
         statsLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         progressPanel.add(progressBar, BorderLayout.CENTER);
@@ -166,13 +168,13 @@ public class PetProfileGUI extends JFrame {
         JPanel panel = new JPanel(new BorderLayout(5, 5));
         panel.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(new Color(46, 204, 113), 2),
-                "训练历史记录",
+                "Training History",
                 0, 0,
-                new Font("微软雅黑", Font.BOLD, 14),
+                new Font("Dialog", Font.BOLD, 14),
                 new Color(46, 204, 113)
         ));
 
-        String[] columns = {"课程名称", "训练师", "状态", "评级", "进度备注"};
+        String[] columns = {"Course Name", "Trainer", "Status", "Rating", "Progress Notes"};
         historyTableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -182,8 +184,8 @@ public class PetProfileGUI extends JFrame {
 
         historyTable = new JTable(historyTableModel);
         historyTable.setRowHeight(35);
-        historyTable.setFont(new Font("微软雅黑", Font.PLAIN, 13));
-        historyTable.getTableHeader().setFont(new Font("微软雅黑", Font.BOLD, 12));
+        historyTable.setFont(new Font("Dialog", Font.PLAIN, 13));
+        historyTable.getTableHeader().setFont(new Font("Dialog", Font.BOLD, 12));
         historyTable.getTableHeader().setBackground(new Color(46, 204, 113));
         historyTable.getTableHeader().setForeground(Color.WHITE);
 
@@ -215,16 +217,16 @@ public class PetProfileGUI extends JFrame {
         Pet selectedPet = (Pet) petSelector.getSelectedItem();
         if (selectedPet == null) return;
 
-        // 更新宠物信息
+        // Update pet information
         nameLabel.setText(selectedPet.getName());
-        breedLabel.setText("品种: " + selectedPet.getBreed() + " (" + selectedPet.getSpecies() + ")");
-        ageLabel.setText("年龄: " + selectedPet.getAgeInMonths() + " 个月");
-        temperamentLabel.setText("性格: " + selectedPet.getTemperament());
-        ownerLabel.setText("主人: " + selectedPet.getOwnerName());
-        contactLabel.setText("联系: " + selectedPet.getOwnerContact());
+        breedLabel.setText("Breed: " + selectedPet.getBreed() + " (" + selectedPet.getSpecies() + ")");
+        ageLabel.setText("Age: " + selectedPet.getAgeInMonths() + " months");
+        temperamentLabel.setText("Temperament: " + selectedPet.getTemperament());
+        ownerLabel.setText("Owner: " + selectedPet.getOwnerName());
+        contactLabel.setText("Contact: " + selectedPet.getOwnerContact());
 
         loadTrainingHistory(selectedPet);
-        updatePhotoPanel(selectedPet.getSpecies());
+        updatePhotoPanel(selectedPet);
     }
 
     private void loadTrainingHistory(Pet pet) {
@@ -252,22 +254,114 @@ public class PetProfileGUI extends JFrame {
             }
         }
 
-        // 更新进度条
+        // Update progress bar
         if (totalCount > 0) {
             int progress = (completedCount * 100) / totalCount;
             progressBar.setValue(progress);
             progressBar.setString(progress + "%");
-            statsLabel.setText("完成 " + completedCount + "/" + totalCount + " 门课程");
+            statsLabel.setText("Completed " + completedCount + "/" + totalCount + " courses");
         } else {
             progressBar.setValue(0);
             progressBar.setString("0%");
-            statsLabel.setText("尚未报名任何课程");
+            statsLabel.setText("Not enrolled in any courses");
         }
     }
 
-    private void updatePhotoPanel(String species) {
+    private void updatePhotoPanel(Pet pet) {
         photoPanel.removeAll();
+        photoPanel.setLayout(new BorderLayout());
 
+        String photoUrl = pet.getPhotoUrl();
+        boolean imageLoaded = false;
+
+        if (photoUrl != null && !photoUrl.isEmpty()) {
+            try {
+                // 从 classpath 加载图片（适用于 resources 文件夹）
+                InputStream is = getClass().getResourceAsStream("/static" + photoUrl);
+
+                if (is != null) {
+                    BufferedImage originalImage = ImageIO.read(is);
+                    if (originalImage != null) {
+                        // 创建带圆角和边框的图片显示面板
+                        JPanel imagePanel = new JPanel() {
+                            @Override
+                            protected void paintComponent(Graphics g) {
+                                super.paintComponent(g);
+                                Graphics2D g2d = (Graphics2D) g;
+                                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                                g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+
+                                // 计算居中位置
+                                int panelWidth = getWidth();
+                                int panelHeight = getHeight();
+                                int imageSize = 180;
+                                int x = (panelWidth - imageSize) / 2;
+                                int y = (panelHeight - imageSize) / 2;
+
+                                // 绘制阴影
+                                g2d.setColor(new Color(0, 0, 0, 30));
+                                g2d.fillRoundRect(x + 3, y + 3, imageSize, imageSize, 20, 20);
+
+                                // 绘制白色背景（带圆角）
+                                g2d.setColor(Color.WHITE);
+                                g2d.fillRoundRect(x, y, imageSize, imageSize, 20, 20);
+
+                                // 设置裁剪区域为圆角矩形
+                                g2d.setClip(new java.awt.geom.RoundRectangle2D.Float(x, y, imageSize, imageSize, 20, 20));
+
+                                // 缩放并绘制图片，保持宽高比
+                                int originalWidth = originalImage.getWidth();
+                                int originalHeight = originalImage.getHeight();
+
+                                double scale = Math.max(
+                                        (double) imageSize / originalWidth,
+                                        (double) imageSize / originalHeight
+                                );
+
+                                int scaledWidth = (int) (originalWidth * scale);
+                                int scaledHeight = (int) (originalHeight * scale);
+
+                                int imgX = x + (imageSize - scaledWidth) / 2;
+                                int imgY = y + (imageSize - scaledHeight) / 2;
+
+                                g2d.drawImage(originalImage, imgX, imgY, scaledWidth, scaledHeight, null);
+
+                                // 重置裁剪区域
+                                g2d.setClip(null);
+
+                                // 绘制边框
+                                g2d.setColor(new Color(52, 152, 219));
+                                g2d.setStroke(new BasicStroke(3));
+                                g2d.drawRoundRect(x, y, imageSize, imageSize, 20, 20);
+                            }
+                        };
+
+                        imagePanel.setPreferredSize(new Dimension(200, 200));
+                        imagePanel.setBackground(Color.WHITE);
+                        photoPanel.add(imagePanel, BorderLayout.CENTER);
+
+                        imageLoaded = true;
+                    }
+                    is.close();
+                } else {
+                    System.out.println("Image not found: /static" + photoUrl);
+                }
+            } catch (Exception e) {
+                System.out.println("Failed to load image: " + photoUrl);
+                e.printStackTrace();
+            }
+        }
+
+        // 如果图片加载失败，显示默认图标
+        if (!imageLoaded) {
+            addDefaultIcon(photoPanel, pet.getSpecies());
+        }
+
+        photoPanel.revalidate();
+        photoPanel.repaint();
+    }
+
+    private void addDefaultIcon(JPanel panel, String species) {
         JPanel iconPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -275,29 +369,29 @@ public class PetProfileGUI extends JFrame {
                 Graphics2D g2d = (Graphics2D) g;
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-                // 根据物种选择颜色
+                // Choose color based on species
                 Color bgColor = switch (species) {
-                    case "狗" -> new Color(52, 152, 219);
-                    case "猫" -> new Color(230, 126, 34);
-                    case "兔子" -> new Color(231, 76, 160);
+                    case "Dog", "狗" -> new Color(52, 152, 219);
+                    case "Cat", "猫" -> new Color(230, 126, 34);
+                    case "Rabbit", "兔子" -> new Color(231, 76, 160);
                     default -> new Color(149, 165, 166);
                 };
 
-                // 背景圆
+                // Background circle
                 g2d.setColor(new Color(bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), 50));
                 g2d.fillRoundRect(10, 10, 180, 180, 90, 90);
 
-                // 主圆
+                // Main circle
                 g2d.setColor(bgColor);
                 g2d.fillOval(50, 50, 100, 100);
 
-                // 文字标签
+                // Text label
                 g2d.setColor(Color.WHITE);
-                g2d.setFont(new Font("微软雅黑", Font.BOLD, 16));
+                g2d.setFont(new Font("Dialog", Font.BOLD, 16));
                 String text = switch (species) {
-                    case "狗" -> "DOG";
-                    case "猫" -> "CAT";
-                    case "兔子" -> "RABBIT";
+                    case "Dog", "狗" -> "DOG";
+                    case "Cat", "猫" -> "CAT";
+                    case "Rabbit", "兔子" -> "RABBIT";
                     default -> "PET";
                 };
 
@@ -309,22 +403,20 @@ public class PetProfileGUI extends JFrame {
 
         iconPanel.setPreferredSize(new Dimension(200, 200));
         iconPanel.setBackground(Color.WHITE);
-        photoPanel.add(iconPanel);
-        photoPanel.revalidate();
-        photoPanel.repaint();
+        panel.add(iconPanel);
     }
 
     private String getStatusText(String status) {
         return switch (status) {
-            case "Completed" -> "[✓] 已完成";
-            case "InProgress" -> "[>] 进行中";
-            case "Dropped" -> "[X] 已退训";
-            default -> "[ ] 未知";
+            case "Completed" -> "[✓] Completed";
+            case "InProgress" -> "[>] In Progress";
+            case "Dropped" -> "[X] Dropped";
+            default -> "[ ] Unknown";
         };
     }
 
     private String getRatingText(String rating) {
-        if (rating == null) return "[ ] 未评级";
+        if (rating == null) return "[ ] Not Rated";
         return switch (rating) {
             case "Excellent" -> "[★★★] " + rating;
             case "Good" -> "[★★] " + rating;

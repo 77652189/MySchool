@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 /**
- * Pet实体类 - 宠物信息
+ * Pet Entity - Pet Information
  */
 @Entity
 @Table(name = "pet")
@@ -24,43 +24,43 @@ public class Pet {
     private User user;
 
     /**
-     * 宠物名字
+     * Pet name
      */
     @Column(nullable = false, length = 100)
     private String name;
 
     /**
-     * 宠物品种
+     * Pet breed
      */
     @Column(nullable = false, length = 100)
     private String breed;
 
     /**
-     * 宠物类型（狗/猫/兔子等）
+     * Pet species (Dog/Cat/Rabbit/etc.)
      */
     @Column(nullable = false, length = 50)
     private String species;
 
     /**
-     * 年龄（月）
+     * Age in months
      */
     @Column
     private Integer ageInMonths;
 
     /**
-     * 性格描述
+     * Temperament description
      */
     @Column(length = 200)
     private String temperament;
 
     /**
-     * 主人姓名
+     * Owner name
      */
     @Column(nullable = false, length = 100)
     private String ownerName;
 
     /**
-     * 主人联系方式
+     * Owner contact information
      */
     @Column(nullable = false, length = 100)
     private String ownerContact;
@@ -69,4 +69,11 @@ public class Pet {
     public String toString() {
         return name + " (" + breed + ")";
     }
+
+    /**
+     * Photo URL
+     */
+    @Column(name = "photo_url")
+    private String photoUrl;  // 存储图片路径
+
 }

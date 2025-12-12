@@ -6,11 +6,13 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 /**
- * Enrollment实体类 - 报名记录
+ * Enrollment Entity - Training Enrollment Record
  */
 @Entity
-@Table(name = "enrollment",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"pet_id", "course_section_id"}))
+@Table(
+        name = "enrollment",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"pet_id", "course_section_id"})
+)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,20 +31,20 @@ public class Enrollment {
     private CourseSection courseSection;
 
     /**
-     * 训练评级（Excellent/Good/Fair/NeedsWork）
+     * Training rating (Excellent / Good / Fair / NeedsWork)
      */
     @Column(length = 20)
     private String rating;
 
     /**
-     * 训练进度备注
+     * Training progress notes
      */
     @Column(length = 500)
     private String progressNotes;
 
     /**
-     * 完成状态
+     * Completion status
      */
     @Column(length = 20)
-    private String status; // InProgress/Completed/Dropped
+    private String status; // InProgress / Completed / Dropped
 }

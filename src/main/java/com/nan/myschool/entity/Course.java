@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 /**
- * Course实体类 - 训练课程
+ * Course Entity - Training Courses
  */
 @Entity
 @Table(name = "course")
@@ -20,37 +20,37 @@ public class Course {
     private Integer courseId;
 
     /**
-     * 课程名称
+     * Course title
      */
     @Column(nullable = false, length = 200)
     private String title;
 
     /**
-     * 课程描述
+     * Course description
      */
     @Column(columnDefinition = "TEXT")
     private String description;
 
     /**
-     * 课时数
+     * Number of sessions
      */
     @Column(nullable = false)
     private Integer sessionCount;
 
     /**
-     * 训练类型（基础服从/敏捷训练/行为矫正/社交训练）
+     * Training type (Basic Obedience / Agility Training / Behavior Correction / Social Training)
      */
     @Column(nullable = false, length = 100)
     private String trainingType;
 
     /**
-     * 适合的宠物类型
+     * Suitable pet types
      */
     @Column(length = 100)
     private String suitableFor;
 
     @Override
     public String toString() {
-        return title + " (" + sessionCount + "课时)";
+        return title + " (" + sessionCount + " sessions)";
     }
 }

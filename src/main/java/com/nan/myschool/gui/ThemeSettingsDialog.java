@@ -21,54 +21,50 @@ public class ThemeSettingsDialog extends JDialog {
     }
 
     private void initializeGUI() {
-        setTitle("主题设置");
+        setTitle("Theme Settings");
         setModal(true);
         setSize(450, 300);
         setLayout(new BorderLayout(10, 10));
 
-        // 主面板
+        // Main panel
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(25, 35, 25, 35));
 
-        // 标题 - 移除 emoji
-        JLabel titleLabel = new JLabel("外观设置");
-        titleLabel.setFont(new Font("微软雅黑", Font.BOLD, 22));
+        // Title
+        JLabel titleLabel = new JLabel("Appearance Settings");
+        titleLabel.setFont(new Font("Dialog", Font.BOLD, 22));
         titleLabel.setAlignmentX(java.awt.Component.CENTER_ALIGNMENT);
 
-        // 当前主题状态
-        themeStatusLabel = new JLabel("当前主题: " + themeManager.getCurrentThemeName());
-        themeStatusLabel.setFont(new Font("微软雅黑", Font.PLAIN, 15));
+        // Current theme status
+        themeStatusLabel = new JLabel("Current Theme: " + themeManager.getCurrentThemeName());
+        themeStatusLabel.setFont(new Font("Dialog", Font.PLAIN, 15));
         themeStatusLabel.setAlignmentX(java.awt.Component.CENTER_ALIGNMENT);
 
-        // 主题切换面板
+        // Theme toggle panel
         JPanel togglePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 25, 25));
 
-
-        // 切换按钮
+        // Toggle button
         themeToggle = new JToggleButton();
         themeToggle.setPreferredSize(new Dimension(70, 35));
         themeToggle.setSelected(themeManager.isDarkMode());
         themeToggle.setFocusPainted(false);
-        themeToggle.setText(themeManager.isDarkMode() ? "深色" : "浅色");
-        themeToggle.setFont(new Font("微软雅黑", Font.PLAIN, 12));
+        themeToggle.setText(themeManager.isDarkMode() ? "Dark" : "Light");
+        themeToggle.setFont(new Font("Dialog", Font.PLAIN, 12));
         themeToggle.addActionListener(e -> switchTheme());
-
-
 
         togglePanel.add(themeToggle);
 
-
-        // 说明文字
-        JLabel descLabel = new JLabel("点击切换按钮以更改主题");
-        descLabel.setFont(new Font("微软雅黑", Font.PLAIN, 13));
+        // Description text
+        JLabel descLabel = new JLabel("Click the toggle button to change theme");
+        descLabel.setFont(new Font("Dialog", Font.PLAIN, 13));
         descLabel.setForeground(Color.GRAY);
         descLabel.setAlignmentX(java.awt.Component.CENTER_ALIGNMENT);
 
-        // 预览面板
+        // Preview panel
         JPanel previewPanel = createPreviewPanel();
 
-        // 添加组件
+        // Add components
         mainPanel.add(titleLabel);
         mainPanel.add(Box.createVerticalStrut(20));
         mainPanel.add(themeStatusLabel);
@@ -79,26 +75,26 @@ public class ThemeSettingsDialog extends JDialog {
         mainPanel.add(Box.createVerticalStrut(15));
         mainPanel.add(previewPanel);
 
-        // 按钮面板
+        // Button panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 12));
 
-        JButton applyButton = new JButton("应用");
+        JButton applyButton = new JButton("Apply");
         applyButton.setPreferredSize(new Dimension(100, 38));
-        applyButton.setFont(new Font("微软雅黑", Font.PLAIN, 14));
+        applyButton.setFont(new Font("Dialog", Font.PLAIN, 14));
         applyButton.setBackground(new Color(52, 152, 219));
         applyButton.setForeground(Color.WHITE);
         applyButton.setFocusPainted(false);
         applyButton.setBorderPainted(false);
         applyButton.addActionListener(e -> {
             JOptionPane.showMessageDialog(this,
-                    "主题已应用到所有窗口",
-                    "成功",
+                    "Theme has been applied to all windows",
+                    "Success",
                     JOptionPane.INFORMATION_MESSAGE);
         });
 
-        JButton closeButton = new JButton("关闭");
+        JButton closeButton = new JButton("Close");
         closeButton.setPreferredSize(new Dimension(100, 38));
-        closeButton.setFont(new Font("微软雅黑", Font.PLAIN, 14));
+        closeButton.setFont(new Font("Dialog", Font.PLAIN, 14));
         closeButton.setFocusPainted(false);
         closeButton.addActionListener(e -> dispose());
 
@@ -117,7 +113,7 @@ public class ThemeSettingsDialog extends JDialog {
         previewPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 5));
         previewPanel.setMaximumSize(new Dimension(400, 50));
 
-        // 预览色块
+        // Preview color blocks
         JPanel lightPreview = new JPanel();
         lightPreview.setPreferredSize(new Dimension(60, 40));
         lightPreview.setBackground(Color.WHITE);
@@ -133,10 +129,10 @@ public class ThemeSettingsDialog extends JDialog {
 
         if (themeManager.isDarkMode()) {
             previewPanel.add(darkPreview);
-            previewPanel.add(new JLabel("当前使用"));
+            previewPanel.add(new JLabel("Currently Active"));
         } else {
             previewPanel.add(lightPreview);
-            previewPanel.add(new JLabel("当前使用"));
+            previewPanel.add(new JLabel("Currently Active"));
         }
 
         return previewPanel;
@@ -145,16 +141,16 @@ public class ThemeSettingsDialog extends JDialog {
     private void switchTheme() {
         boolean newDarkMode = themeToggle.isSelected();
         themeManager.setDarkMode(newDarkMode);
-        themeStatusLabel.setText("当前主题: " + themeManager.getCurrentThemeName());
-        themeToggle.setText(newDarkMode ? "深色" : "浅色");
+        themeStatusLabel.setText("Current Theme: " + themeManager.getCurrentThemeName());
+        themeToggle.setText(newDarkMode ? "Dark" : "Light");
 
-        // 更新当前对话框
+        // Update current dialog
         SwingUtilities.updateComponentTreeUI(this);
 
-        // 重新创建预览面板 - 使用完整类名
+        // Recreate preview panel
         java.awt.Component[] components = ((JPanel)getContentPane().getComponent(0)).getComponents();
         for (int i = 0; i < components.length; i++) {
-            if (components[i] instanceof JPanel && i == 8) {  // 预览面板的位置
+            if (components[i] instanceof JPanel && i == 8) {  // Preview panel position
                 ((JPanel)getContentPane().getComponent(0)).remove(i);
                 ((JPanel)getContentPane().getComponent(0)).add(createPreviewPanel(), i);
                 break;
@@ -163,13 +159,14 @@ public class ThemeSettingsDialog extends JDialog {
         revalidate();
         repaint();
     }
+
     /**
-     * 显示对话框前更新状态
+     * Update status before showing dialog
      */
     public void showDialog() {
         themeToggle.setSelected(themeManager.isDarkMode());
-        themeToggle.setText(themeManager.isDarkMode() ? "深色" : "浅色");
-        themeStatusLabel.setText("当前主题: " + themeManager.getCurrentThemeName());
+        themeToggle.setText(themeManager.isDarkMode() ? "Dark" : "Light");
+        themeStatusLabel.setText("Current Theme: " + themeManager.getCurrentThemeName());
         setVisible(true);
     }
 }

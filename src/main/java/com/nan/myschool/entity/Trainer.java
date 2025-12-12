@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 /**
- * Trainer实体类 - 训练师信息
+ * Trainer Entity - Trainer Information
  */
 @Entity
 @Table(name = "trainer")
@@ -24,19 +24,19 @@ public class Trainer {
     private User user;
 
     /**
-     * 训练师姓名
+     * Trainer name
      */
     @Column(nullable = false, length = 100)
     private String name;
 
     /**
-     * 专业领域（服从训练/敏捷训练/行为矫正等）
+     * Specialization (Obedience Training / Agility Training / Behavior Correction / etc.)
      */
     @Column(nullable = false, length = 100)
     private String specialization;
 
     /**
-     * 认证级别
+     * Certification level
      */
     @Column(length = 50)
     private String certificationLevel;

@@ -69,6 +69,6 @@ public class ThemeManager {
      * 获取当前主题名称
      */
     public String getCurrentThemeName() {
-        return isDarkMode ? "深色模式" : "浅色模式";
+        return isDarkMode ? "Night mode" : "day mode";
     }
 }
